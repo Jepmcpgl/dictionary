@@ -3,7 +3,7 @@ import 'package:project_app/api.dart';
 import 'package:project_app/response_model.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -12,28 +12,22 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool inProgress = false;
   ResponseModel? responseModel;
-  String noDataText = "Welcome, to our Dictionary!";
+  String noDataText = "Welcome to our Dictionary!";
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey[100], // Use a light background color
-      child: SafeArea(
-        child: Scaffold(
-          body: Padding(
+    return Scaffold(
+      body: SafeArea(
+        child: Container(
+          color: Colors.grey[100],
+          child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeaderWidget(), // Added header widget
-                _buildSearchWidget(),
+                _buildHeaderWidget(),
                 const SizedBox(height: 12),
-                if (inProgress)
-                  const LinearProgressIndicator()
-                else if (responseModel != null)
-                  Expanded(child: _buildResponseWidget())
-                else
-                  _noDataWidget(),
+                _buildContent(),
               ],
             ),
           ),
@@ -43,9 +37,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   _buildHeaderWidget() {
-    return const Center(
+    return Center(
       child: Padding(
-        padding: EdgeInsets.only(bottom: 16.0),
+        padding: const EdgeInsets.only(bottom: 16.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -54,7 +48,7 @@ class _HomePageState extends State<HomePage> {
               color: Colors.black87,
               size: 30,
             ),
-            SizedBox(width: 8), // Add some spacing between the icon and text
+            SizedBox(width: 8),
             Text(
               "Dictionary",
               style: TextStyle(
@@ -69,7 +63,20 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-
+  _buildContent() {
+    return inProgress
+        ? const Center(child: CircularProgressIndicator())
+        : responseModel != null
+        ? _buildResponseWidget()
+        : Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildSearchWidget(),
+        const SizedBox(height: 12),
+        _noDataWidget(),
+      ],
+    );
+  }
 
   _buildResponseWidget() {
     return Column(
@@ -81,7 +88,7 @@ class _HomePageState extends State<HomePage> {
           style: TextStyle(
             color: Colors.purple.shade600,
             fontWeight: FontWeight.bold,
-            fontSize: 22,
+            fontSize: MediaQuery.of(context).size.width * 0.06,
           ),
         ),
         Text(responseModel!.phonetic ?? ""),
@@ -100,15 +107,13 @@ class _HomePageState extends State<HomePage> {
 
   _buildMeaningWidget(Meanings meanings) {
     String definitionList = "";
-    meanings.definitions?.forEach(
-          (element) {
-        int index = meanings.definitions!.indexOf(element);
-        definitionList += "\n${index + 1}. ${element.definition}\n";
-      },
-    );
+    meanings.definitions?.forEach((element) {
+      int index = meanings.definitions!.indexOf(element);
+      definitionList += "\n${index + 1}. ${element.definition}\n";
+    });
 
     return Card(
-      color: Colors.grey[200], // Use a light background color
+      color: Colors.grey[200],
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
@@ -119,7 +124,7 @@ class _HomePageState extends State<HomePage> {
               style: TextStyle(
                 color: Colors.orange.shade600,
                 fontWeight: FontWeight.bold,
-                fontSize: 20,
+                fontSize: MediaQuery.of(context).size.width * 0.05,
               ),
             ),
             const SizedBox(height: 12),
@@ -131,7 +136,7 @@ class _HomePageState extends State<HomePage> {
                 fontSize: 16,
               ),
             ),
-            Text(definitionList.trim()), // Remove leading/trailing whitespaces
+            Text(definitionList.trim()),
             _buildSet("Synonyms", meanings.synonyms),
             _buildSet("Antonyms", meanings.antonyms),
           ],
@@ -154,7 +159,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(height: 10),
-          Text(setList!.join(', ')), // Use a comma-separated list
+          Text(setList!.join(', ')),
           const SizedBox(height: 10),
         ],
       );
@@ -176,11 +181,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   _buildSearchWidget() {
-    return SearchBar(
-      hintText: "Type here the word you want to know about",
-      onSubmitted: (value) {
-        _getMeaningFromApi(value);
-      },
+    return Center(
+      child: SearchBar(
+        hintText: "Type here the word you want to know about",
+        onSubmitted: (value) {
+          _getMeaningFromApi(value);
+        },
+      ),
     );
   }
 
@@ -190,7 +197,6 @@ class _HomePageState extends State<HomePage> {
     });
     try {
       responseModel = await API.fetchMeaning(word);
-      setState(() {});
     } catch (e) {
       responseModel = null;
       noDataText = "Meaning cannot be fetched";
