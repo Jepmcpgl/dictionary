@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _buildHeaderWidget() {
+  Widget _buildHeaderWidget() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _buildResponseWidget() {
+  Widget _buildResponseWidget() {
     return Container(
       width: double.infinity,
       child: Center(
@@ -105,7 +105,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _buildMeaningWidget(Meanings meanings) {
+  Widget _buildMeaningWidget(Meanings meanings) {
     String definitionList = "";
     meanings.definitions?.forEach(
           (element) {
@@ -114,40 +114,37 @@ class _HomePageState extends State<HomePage> {
       },
     );
 
-    return Card(
-      color: Colors.grey[200],
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              meanings.partOfSpeech!,
-              style: TextStyle(
-                color: Colors.orange.shade600,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            meanings.partOfSpeech!,
+            style: TextStyle(
+              color: Colors.orange.shade600,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
             ),
-            const SizedBox(height: 12),
-            const Text(
-              "Definitions : ",
-              style: TextStyle(
-                color: Colors.black87,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            "Definitions : ",
+            style: TextStyle(
+              color: Colors.black87,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
             ),
-            Text(definitionList.trim()),
-            _buildSet("Synonyms", meanings.synonyms),
-            _buildSet("Antonyms", meanings.antonyms),
-          ],
-        ),
+          ),
+          Text(definitionList.trim()),
+          _buildSet("Synonyms", meanings.synonyms),
+          _buildSet("Antonyms", meanings.antonyms),
+        ],
       ),
     );
   }
 
-  _buildSet(String title, List<String>? setList) {
+  Widget _buildSet(String title, List<String>? setList) {
     if (setList?.isNotEmpty ?? false) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,7 +167,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  _noDataWidget() {
+  Widget _noDataWidget() {
     return SizedBox(
       height: 100,
       child: Center(
@@ -182,7 +179,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _buildSearchWidget() {
+  Widget _buildSearchWidget() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: TextField(
@@ -197,7 +194,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _getMeaningFromApi(String word) async {
+  void _getMeaningFromApi(String word) async {
     setState(() {
       inProgress = true;
     });
